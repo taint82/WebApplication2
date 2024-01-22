@@ -2,14 +2,8 @@
 {
     public static class ApplicationRole
     {
-        public enum Role 
-        {
-            Admin,
-            Customer,
-            Manager,
-            Accountant,
-            HR,
-            Warehouse,
-        }
+        public const string Admin = "Administrator";
+        public const string Customer = "Customer";
+        public const string HR = "Human Resource";
     }
 }

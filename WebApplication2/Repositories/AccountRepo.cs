@@ -24,29 +24,25 @@ namespace WebApplication2.Repositories
             this.configuration = configuration;
             this.roleManager = roleManager;
         }
-        public async Task<AccountResModel> SignInAsync(SignInModel signInModel)
+        public async Task<string> SignInAsync(SignInModel signInModel)
         {   
             var user = await userManager.FindByEmailAsync(signInModel.Email);
             var passWordValid = await userManager.CheckPasswordAsync(user, signInModel.Password);
             if (user == null || !passWordValid)
             {
-                return null;
+                return string.Empty;
             }
-            //var result = await signInManager.PasswordSignInAsync(signInModel.Email, signInModel.Password, false, false);
-
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, signInModel.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
-
             var userRole = await userManager.GetRolesAsync(user);
             foreach (var role in userRole)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, role.ToString()));
             }
             var authKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:IssuerSigningKeySecret"]));
-
             //byte[] keyBytes = new byte[64]; // 64 bytes = 512 bits
                                             // Thực hiện logic để tạo giá trị ngẫu nhiên cho keyBytes
 
@@ -61,13 +57,8 @@ namespace WebApplication2.Repositories
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authKey, SecurityAlgorithms.HmacSha256Signature)
             );
-            var response = new AccountResModel()
-            {
-                role = userRole,
-                token = token
-            };
 
-            return response;
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task<IdentityResult> SignUpAsync(SignUpModel signUpModel)
@@ -84,10 +75,11 @@ namespace WebApplication2.Repositories
             if(result.Succeeded)
             {
                 //kiem tra role Customer da co chua
-                if(!await roleManager.RoleExistsAsync(ApplicationRole.Role.Customer.ToString())){
-                    await roleManager.CreateAsync(new IdentityRole(ApplicationRole.Role.Customer.ToString()));
+                if(!await roleManager.RoleExistsAsync(ApplicationRole.Customer))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(ApplicationRole.Customer));
                 }
-                await userManager.AddToRoleAsync(user, ApplicationRole.Role.Customer.ToString());
+                await userManager.AddToRoleAsync(user, ApplicationRole.Customer);
             }
 
             return result;

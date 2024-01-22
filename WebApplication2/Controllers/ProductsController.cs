@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Entities;
+using WebApplication2.Helpers;
 using WebApplication2.Models;
 using WebApplication2.Repositories;
 
@@ -19,7 +20,7 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = ApplicationRole.Customer)]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -33,6 +34,7 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet("{Id}")]
+        [Authorize(Roles = ApplicationRole.Customer)]
         public async Task<IActionResult> GetUserById(int Id)
         {
             var user = await _userRepository.GetUsersAsync(Id);
