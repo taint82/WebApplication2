@@ -3,12 +3,12 @@
     public class UserModel
     {
         public int Id { get; set; }
-        public String? FirstName { get; set; } = null;
+        public string? FirstName { get; set; } = null;
 
-        public String? LastName { get; set; }
-        public String FullName => $"{FirstName} {LastName}";
-        public String? Email { get; set; } = null;
+        public string? LastName { get; set; }
+        public string FullName => $"{FirstName} {LastName}";
+        public string? Email { get; set; } = null;
         public int Phone { get; set; }
-        public String? Gender { get; set; } = null;
+        public string? Gender { get; set; } = null;
     }
 }
